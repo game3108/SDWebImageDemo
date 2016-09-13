@@ -41,38 +41,51 @@ static char TAG_ACTIVITY_SHOW;
     [self sd_setImageWithURL:url placeholderImage:placeholder options:options progress:nil completed:completedBlock];
 }
 
+//设置image万能方法
 - (void)sd_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletionBlock)completedBlock {
+    //取消当前的图片下载
     [self sd_cancelCurrentImageLoad];
+    //保存url
     objc_setAssociatedObject(self, &imageURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
+    //如果没有SDWebImageDelayPlaceholder则先设置placeholder图
     if (!(options & SDWebImageDelayPlaceholder)) {
         dispatch_main_async_safe(^{
             self.image = placeholder;
         });
     }
     
+    //有url进行下载操作
     if (url) {
 
         // check if activityView is enabled or not
+        //是否需要显示loading标签图
         if ([self showActivityIndicatorView]) {
             [self addActivityIndicator];
         }
 
+        //下载图片
         __weak __typeof(self)wself = self;
         id <SDWebImageOperation> operation = [SDWebImageManager.sharedManager downloadImageWithURL:url options:options progress:progressBlock completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+            
+            //去掉可能存在的loadting图
             [wself removeActivityIndicator];
             if (!wself) return;
             dispatch_main_sync_safe(^{
                 if (!wself) return;
+                
+                //不自动设置图片
                 if (image && (options & SDWebImageAvoidAutoSetImage) && completedBlock)
                 {
                     completedBlock(image, error, cacheType, url);
                     return;
                 }
+                //设置图片
                 else if (image) {
                     wself.image = image;
                     [wself setNeedsLayout];
                 } else {
+                    //没有图片设置默认图
                     if ((options & SDWebImageDelayPlaceholder)) {
                         wself.image = placeholder;
                         [wself setNeedsLayout];
@@ -83,10 +96,13 @@ static char TAG_ACTIVITY_SHOW;
                 }
             });
         }];
+        //缓存operation的key为load
         [self sd_setImageLoadOperation:operation forKey:@"UIImageViewImageLoad"];
     } else {
+        //没有url直接去掉loading图
         dispatch_main_async_safe(^{
             [self removeActivityIndicator];
+            //返回错误给外面的block
             if (completedBlock) {
                 NSError *error = [NSError errorWithDomain:SDWebImageErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey : @"Trying to load a nil url"}];
                 completedBlock(nil, error, SDImageCacheTypeNone, url);
