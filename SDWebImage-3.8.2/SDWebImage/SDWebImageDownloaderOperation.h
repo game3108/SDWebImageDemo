@@ -10,6 +10,7 @@
 #import "SDWebImageDownloader.h"
 #import "SDWebImageOperation.h"
 
+//相关notification参数
 extern NSString *const SDWebImageDownloadStartNotification;
 extern NSString *const SDWebImageDownloadReceiveResponseNotification;
 extern NSString *const SDWebImageDownloadStopNotification;
@@ -20,14 +21,16 @@ extern NSString *const SDWebImageDownloadFinishNotification;
 /**
  * The request used by the operation's task.
  */
+//operation的请求
 @property (strong, nonatomic, readonly) NSURLRequest *request;
 
 /**
  * The operation's task
  */
+//operation的task
 @property (strong, nonatomic, readonly) NSURLSessionTask *dataTask;
 
-
+//是否压缩图片
 @property (assign, nonatomic) BOOL shouldDecompressImages;
 
 /**
@@ -41,21 +44,25 @@ extern NSString *const SDWebImageDownloadFinishNotification;
  *
  * This will be overridden by any shared credentials that exist for the username or password of the request URL, if present.
  */
+//当收到`-connection:didReceiveAuthenticationChallenge:`的验证
 @property (nonatomic, strong) NSURLCredential *credential;
 
 /**
  * The SDWebImageDownloaderOptions for the receiver.
  */
+//下载方式
 @property (assign, nonatomic, readonly) SDWebImageDownloaderOptions options;
 
 /**
  * The expected size of data.
  */
+//文件大小
 @property (assign, nonatomic) NSInteger expectedSize;
 
 /**
  * The response returned by the operation's connection.
  */
+//operation的返回
 @property (strong, nonatomic) NSURLResponse *response;
 
 /**
