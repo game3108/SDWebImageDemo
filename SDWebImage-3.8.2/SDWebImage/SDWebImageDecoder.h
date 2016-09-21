@@ -13,6 +13,7 @@
 
 @interface UIImage (ForceDecode)
 
+//解码图片
 + (UIImage *)decodedImageWithImage:(UIImage *)image;
 
 @end
