@@ -1,5 +1,5 @@
 # SDWebImageDemo
 
-SDWebImageDemo source code analysis
+SDWebImageDemo v3.8.2 source code document
 
-SDWebImageDemo 源代码分析
+SDWebImageDemo v3.8.2 源代码分析
