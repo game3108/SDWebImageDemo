@@ -41,7 +41,7 @@ static char TAG_ACTIVITY_SHOW;
     [self sd_setImageWithURL:url placeholderImage:placeholder options:options progress:nil completed:completedBlock];
 }
 
-//设置image万能方法
+//设置image的基础方法
 - (void)sd_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletionBlock)completedBlock {
     //取消当前的图片下载
     [self sd_cancelCurrentImageLoad];
