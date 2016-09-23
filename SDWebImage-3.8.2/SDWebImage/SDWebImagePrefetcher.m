@@ -11,10 +11,15 @@
 @interface SDWebImagePrefetcher ()
 
 @property (strong, nonatomic) SDWebImageManager *manager;
+//预加载url列表
 @property (strong, nonatomic) NSArray *prefetchURLs;
+//请求数量
 @property (assign, nonatomic) NSUInteger requestedCount;
+//跳过数量
 @property (assign, nonatomic) NSUInteger skippedCount;
+//完成数量
 @property (assign, nonatomic) NSUInteger finishedCount;
+//开始时间
 @property (assign, nonatomic) NSTimeInterval startedTime;
 @property (copy, nonatomic) SDWebImagePrefetcherCompletionBlock completionBlock;
 @property (copy, nonatomic) SDWebImagePrefetcherProgressBlock progressBlock;
@@ -54,11 +59,14 @@
     return self.manager.imageDownloader.maxConcurrentDownloads;
 }
 
+//开始加载
 - (void)startPrefetchingAtIndex:(NSUInteger)index {
     if (index >= self.prefetchURLs.count) return;
+    //已经请求数量＋1
     self.requestedCount++;
     [self.manager downloadImageWithURL:self.prefetchURLs[index] options:self.options progress:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
         if (!finished) return;
+        //完成的请求数量＋1
         self.finishedCount++;
 
         if (image) {
@@ -71,8 +79,10 @@
                 self.progressBlock(self.finishedCount,[self.prefetchURLs count]);
             }
             // Add last failed
+            //失败的请求数量—＋1
             self.skippedCount++;
         }
+        //回调下载的过程中的回调
         if ([self.delegate respondsToSelector:@selector(imagePrefetcher:didPrefetchURL:finishedCount:totalCount:)]) {
             [self.delegate imagePrefetcher:self
                             didPrefetchURL:self.prefetchURLs[index]
@@ -80,11 +90,14 @@
                                 totalCount:self.prefetchURLs.count
              ];
         }
+        //总数>请求数，说明还没请求完
         if (self.prefetchURLs.count > self.requestedCount) {
             dispatch_async(self.prefetcherQueue, ^{
                 [self startPrefetchingAtIndex:self.requestedCount];
             });
+        //全部请求完成
         } else if (self.finishedCount == self.requestedCount) {
+            //完成回调
             [self reportStatus];
             if (self.completionBlock) {
                 self.completionBlock(self.finishedCount, self.skippedCount);
@@ -95,7 +108,9 @@
     }];
 }
 
+//完成状态回调
 - (void)reportStatus {
+    //获得所有加载数量，回调delegate
     NSUInteger total = [self.prefetchURLs count];
     if ([self.delegate respondsToSelector:@selector(imagePrefetcher:didFinishWithTotalCount:skippedCount:)]) {
         [self.delegate imagePrefetcher:self
@@ -110,6 +125,7 @@
 }
 
 - (void)prefetchURLs:(NSArray *)urls progress:(SDWebImagePrefetcherProgressBlock)progressBlock completed:(SDWebImagePrefetcherCompletionBlock)completionBlock {
+    //防止重复的预加载请求
     [self cancelPrefetching]; // Prevent duplicate prefetch request
     self.startedTime = CFAbsoluteTimeGetCurrent();
     self.prefetchURLs = urls;
