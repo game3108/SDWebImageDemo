@@ -143,6 +143,18 @@
  *                       indicating if the image was retrieved from the local cache or from the network.
  *                       The fourth parameter is the original image url.
  */
+
+/**
+ 通过url，设置imageview的image，placeholder和设置
+ 
+ 下载方式异步并且缓存
+
+ @param url            图片url
+ @param placeholder    初始化图片
+ @param options        下载图片方式
+ @param progressBlock  进度block回调
+ @param completedBlock 完成block回调
+ */
 - (void)sd_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletionBlock)completedBlock;
 
 /**

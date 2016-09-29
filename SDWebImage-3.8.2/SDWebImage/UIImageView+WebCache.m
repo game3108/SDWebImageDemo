@@ -41,7 +41,17 @@ static char TAG_ACTIVITY_SHOW;
     [self sd_setImageWithURL:url placeholderImage:placeholder options:options progress:nil completed:completedBlock];
 }
 
-//设置image的基础方法
+/**
+ 通过url，设置imageview的image，placeholder和设置
+ 
+ 下载方式异步并且缓存
+ 
+ @param url            图片url
+ @param placeholder    初始化图片
+ @param options        下载图片方式
+ @param progressBlock  进度block回调
+ @param completedBlock 完成block回调
+ */
 - (void)sd_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletionBlock)completedBlock {
     //取消当前的图片下载
     [self sd_cancelCurrentImageLoad];
