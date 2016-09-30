@@ -11,13 +11,15 @@
 
 @implementation UIImage (GIF)
 
+//获取gif图片
 + (UIImage *)sd_animatedGIFWithData:(NSData *)data {
     if (!data) {
         return nil;
     }
-
+    //Core Graphic获取图片
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
-
+    
+    //获取数量
     size_t count = CGImageSourceGetCount(source);
 
     UIImage *animatedImage;
@@ -26,27 +28,32 @@
         animatedImage = [[UIImage alloc] initWithData:data];
     }
     else {
+        //多张图片代表gif
+        
         NSMutableArray *images = [NSMutableArray array];
 
         NSTimeInterval duration = 0.0f;
 
         for (size_t i = 0; i < count; i++) {
+            //创建对应帧的图片
             CGImageRef image = CGImageSourceCreateImageAtIndex(source, i, NULL);
             if (!image) {
                 continue;
             }
-
+            //获取事件
             duration += [self sd_frameDurationAtIndex:i source:source];
-
+            //添加到啊忍让
             [images addObject:[UIImage imageWithCGImage:image scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp]];
 
             CGImageRelease(image);
         }
 
+        //没有持续时间就0.1秒间隔
         if (!duration) {
             duration = (1.0f / 10.0f) * count;
         }
-
+        
+        //生成图片
         animatedImage = [UIImage animatedImageWithImages:images duration:duration];
     }
 
@@ -57,10 +64,13 @@
 
 + (float)sd_frameDurationAtIndex:(NSUInteger)index source:(CGImageSourceRef)source {
     float frameDuration = 0.1f;
+    //获取参数
     CFDictionaryRef cfFrameProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil);
     NSDictionary *frameProperties = (__bridge NSDictionary *)cfFrameProperties;
+    //gif参数
     NSDictionary *gifProperties = frameProperties[(NSString *)kCGImagePropertyGIFDictionary];
 
+    //gif延时参数
     NSNumber *delayTimeUnclampedProp = gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime];
     if (delayTimeUnclampedProp) {
         frameDuration = [delayTimeUnclampedProp floatValue];

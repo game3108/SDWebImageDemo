@@ -23,6 +23,7 @@
     }
     
     UIImage *image;
+    //获取图片类型
     NSString *imageContentType = [NSData sd_contentTypeForImageData:data];
     if ([imageContentType isEqualToString:@"image/gif"]) {
         image = [UIImage sd_animatedGIFWithData:data];
@@ -35,6 +36,7 @@
 #endif
     else {
         image = [[UIImage alloc] initWithData:data];
+        //获取图片方向
         UIImageOrientation orientation = [self sd_imageOrientationFromImageData:data];
         if (orientation != UIImageOrientationUp) {
             image = [UIImage imageWithCGImage:image.CGImage

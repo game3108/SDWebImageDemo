@@ -8,6 +8,7 @@
 
 @implementation NSData (ImageContentType)
 
+//返回图片类型，通过前面的字节
 + (NSString *)sd_contentTypeForImageData:(NSData *)data {
     uint8_t c;
     [data getBytes:&c length:1];
@@ -23,6 +24,7 @@
             return @"image/tiff";
         case 0x52:
             // R as RIFF for WEBP
+            //google的wep格式
             if ([data length] < 12) {
                 return nil;
             }
